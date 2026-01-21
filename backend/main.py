@@ -15,7 +15,7 @@ import models, schemas
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
 # JWTトークンの設定
-SECRET_KEY = "your-secret-key-here" 
+SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-for-local-development") 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
