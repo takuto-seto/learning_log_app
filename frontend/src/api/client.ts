@@ -73,3 +73,18 @@ export const updateLog = async (id: number, log: { title: string; content: strin
   if (!response.ok) throw new Error("Failed to update log");
   return response.json();
 };
+
+export const register = async (email: string, password: string) => {
+  const response = await fetch(`${API_URL}/users/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.detail || '登録に失敗しました。');
+  }
+
+  return response.json();
+};

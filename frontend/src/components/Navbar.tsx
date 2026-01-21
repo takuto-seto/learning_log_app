@@ -1,33 +1,50 @@
-import React from "react";
+import React from 'react';
 
-export const Navbar: React.FC = () => {
-  const navItems = [
-    { label: "About", href: "#about" },
-    { label: "Skills", href: "#skills" },
-    { label: "Story", href: "#story" },
-    { label: "Works", href: "#works" },
-    { label: "Logs", href: "#logs" },
-  ];
+interface NavbarProps {
+  isLoggedIn: boolean;
+  onLogout: () => void;
+}
+
+export const Navbar: React.FC<NavbarProps> = ({ isLoggedIn, onLogout }) => {
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
-    <nav className="fixed top-4 left-0 right-0 z-50 px-4 flex justify-center">
-      <div className="bg-[#00152b]/80 backdrop-blur-lg border border-white/10 px-4 md:px-8 py-3 md:py-4 rounded-full shadow-2xl flex justify-between items-center w-full max-w-2xl overflow-x-auto no-scrollbar">
-        
-        <div className="text-[#FF9F43] font-black text-lg md:text-xl tracking-tighter mr-4">
-          T.S
+    <nav className="fixed top-0 left-0 w-full z-50 bg-[#00152b]/80 backdrop-blur-md border-b border-[#FF9F43]/10">
+      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        {/* ロゴ部分 */}
+        <div 
+          onClick={scrollToTop}
+          className="text-2xl font-black text-[#FF9F43] italic tracking-tighter cursor-pointer hover:opacity-80 transition-opacity"
+        >
+          LEARNING<span className="text-[#E0E6ED] ml-1">LOG</span>
         </div>
 
-        {/* メニュー：スマホでは文字を小さく、間隔も調整 */}
-        <div className="flex gap-4 md:gap-8 shrink-0">
-          {navItems.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              className="text-[10px] md:text-xs font-black text-gray-400 hover:text-[#FF9F43] transition-colors uppercase tracking-widest whitespace-nowrap"
+        {/* 右側メニュー */}
+        <div className="flex items-center gap-6">
+          {isLoggedIn ? (
+            <>
+              {/* ログイン中のみ表示される要素 */}
+              <span className="hidden md:inline text-xs font-bold text-[#FF9F43]/60 tracking-widest">
+                DASHBOARD ACTIVE
+              </span>
+              <button
+                onClick={onLogout}
+                className="px-6 py-2 border-2 border-[#FF9F43] text-[#FF9F43] rounded-full text-xs font-black hover:bg-[#FF9F43] hover:text-[#00152b] transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-[#FF9F43]/10"
+              >
+                LOGOUT
+              </button>
+            </>
+          ) : (
+            /* 未ログイン時に「ログインへ移動」ボタンを出す場合（オプション） */
+            <button
+              onClick={() => document.getElementById('auth-section')?.scrollIntoView({ behavior: 'smooth' })}
+              className="text-xs font-black text-[#FF9F43] hover:text-[#E0E6ED] transition-colors tracking-widest"
             >
-              {item.label}
-            </a>
-          ))}
+              SIGN IN
+            </button>
+          )}
         </div>
       </div>
     </nav>
