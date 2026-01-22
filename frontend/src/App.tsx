@@ -15,6 +15,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(
     !!localStorage.getItem("token")
   );
+  const [isDesc, setIsDesc] = useState(true);
 
   const loadLogs = (searchQuery: string = "") => {
     if (localStorage.getItem("token")) {
@@ -30,6 +31,10 @@ function App() {
   // 検索実行時のハンドラー
   const handleSearch = (query: string) => {
     loadLogs(query);
+  };
+
+  const handleToggleSort = () => {
+    setIsDesc(!isDesc);
   };
 
   const handleEditClick = (log: LearningLog) => {
@@ -107,7 +112,11 @@ function App() {
       ?.scrollIntoView({ behavior: "smooth" });
   };
 
-  /* ... (handleSubmit, handleDeleteなどはそのまま) ... */
+  const sortedLogs = [...logs].sort((a, b) => {
+    const dateA = new Date(a.created_at).getTime();
+    const dateB = new Date(b.created_at).getTime();
+    return isDesc ? dateB - dateA : dateA - dateB;
+  });
 
   return (
     <div className="min-h-screen bg-[#00152b] text-[#E0E6ED] font-['M_PLUS_Rounded_1c',_sans-serif] overflow-x-hidden">
@@ -135,7 +144,7 @@ function App() {
           {/* Navbar分の余白 */}
           {/* ログイン後：学習ログ管理画面のみ */}
           <LearningLogs
-            logs={logs}
+            logs={sortedLogs}
             title={title}
             content={content}
             category={category}
@@ -148,6 +157,8 @@ function App() {
             onCancel={handleCancelEdit}
             isEditing={editingId !== null}
             onSearch={handleSearch}
+            isDesc={isDesc}
+            onToggleSort={handleToggleSort}
           />
         </div>
       )}

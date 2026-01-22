@@ -11,11 +11,12 @@ interface LearningLogsProps {
   setCategory: (val: string) => void;
   onSubmit: (e: React.FormEvent) => void;
   onDelete: (id: number) => void;
-  // --- 編集機能用のPropsを追加 ---
   onEdit: (log: LearningLog) => void;
   onCancel: () => void;
   isEditing: boolean;
   onSearch: (query: string) => void;
+  isDesc: boolean;
+  onToggleSort: () => void;
 }
 
 export const LearningLogs: React.FC<LearningLogsProps> = ({
@@ -32,6 +33,8 @@ export const LearningLogs: React.FC<LearningLogsProps> = ({
   onCancel,
   isEditing,
   onSearch,
+  isDesc,
+  onToggleSort,
 }) => {
   const formatDate = (dateString: string) => {
     if (!dateString) return "";
@@ -67,7 +70,6 @@ export const LearningLogs: React.FC<LearningLogsProps> = ({
             DAILY LOGS
           </h2>
           <div className="w-16 h-1.5 bg-[#FF9F43] mx-auto rounded-full"></div>
-          {/* 編集モード中であることを知らせるバッジ */}
           {isEditing && (
             <div className="mt-4 inline-block px-4 py-1 rounded-full bg-[#FF9F43]/20 text-[#FF9F43] text-[10px] font-black tracking-widest uppercase animate-pulse">
               Editing Mode
@@ -75,17 +77,24 @@ export const LearningLogs: React.FC<LearningLogsProps> = ({
           )}
         </div>
 
-        {/* 検索バー */}
-        <div className="mb-8">
+        {/* 検索バー & ソートボタン */}
+        <div className="mb-8 flex gap-4 pop-in">
           <input
             type="text"
             placeholder="ログを検索 (タイトル、カテゴリー...)"
             onChange={(e) => onSearch(e.target.value)}
-            className="w-full px-6 py-3 bg-[#00152b] border-2 border-[#FF9F43]/20 rounded-xl text-[#E0E6ED] focus:border-[#FF9F43] outline-none transition-all shadow-inner"
+            className="flex-1 px-6 py-3 bg-[#00152b] border-2 border-[#FF9F43]/20 rounded-xl text-[#E0E6ED] focus:border-[#FF9F43] outline-none transition-all shadow-inner"
           />
+          <button
+            type="button"
+            onClick={onToggleSort}
+            className="px-6 py-3 bg-white/5 border-2 border-white/10 rounded-xl text-[#FF9F43] font-black hover:bg-white/10 transition-all flex items-center gap-2 whitespace-nowrap"
+          >
+            {isDesc ? "NEWEST ↓" : "OLDEST ↑"}
+          </button>
         </div>
 
-        {/* フォーム：IDを付与してスクロール先にする */}
+        {/* フォーム */}
         <form
           id="log-form"
           onSubmit={onSubmit}
@@ -134,6 +143,7 @@ export const LearningLogs: React.FC<LearningLogsProps> = ({
           </div>
         </form>
 
+        {/* ログ一覧 */}
         <div className="grid gap-6">
           {logs.map((log) => (
             <div
@@ -158,27 +168,14 @@ export const LearningLogs: React.FC<LearningLogsProps> = ({
               </div>
 
               <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                {/* 編集ボタンを追加 */}
                 <button
                   onClick={() => onEdit(log)}
                   className="p-3 text-gray-700 hover:text-[#FF9F43] transition-all transform hover:-rotate-12"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2.5}
-                      d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4L16.5 3.5z"
-                    />
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4L16.5 3.5z" />
                   </svg>
                 </button>
-                {/* 削除ボタン */}
                 <button
                   onClick={() => onDelete(log.id)}
                   className="p-3 text-gray-700 hover:text-red-500 transition-all transform hover:rotate-90"
