@@ -1,6 +1,6 @@
 import type { LearningLog } from '../types/log';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 // ★共通：ローカルストレージからトークンを取得してヘッダーを作る関数
 const getAuthHeaders = () => {
