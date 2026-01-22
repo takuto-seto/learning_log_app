@@ -3,7 +3,7 @@ import { fetchLogs, createLog, deleteLog, updateLog } from "./api/client";
 import { Navbar } from "./components/Navbar";
 import { LearningLogs } from "./components/LearningLogs";
 import { AuthForm } from "./components/AuthForm";
-import { LandingSection } from "./components/LandingSection"; // ★新設
+import { LandingSection } from "./components/LandingSection";
 import type { LearningLog } from "./types/log";
 
 function App() {
@@ -12,14 +12,11 @@ function App() {
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(
-    !!localStorage.getItem("token")
-  );
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!localStorage.getItem("token"));
   const [isDesc, setIsDesc] = useState(true);
 
   const loadLogs = (searchQuery: string = "") => {
     if (localStorage.getItem("token")) {
-      // APIクライアント側も search 引数を受け取れるように修正が必要
       fetchLogs(searchQuery)
         .then(setLogs)
         .catch((err) => {
@@ -28,7 +25,6 @@ function App() {
     }
   };
 
-  // 検索実行時のハンドラー
   const handleSearch = (query: string) => {
     loadLogs(query);
   };
@@ -42,7 +38,6 @@ function App() {
     setTitle(log.title);
     setCategory(log.category || "");
     setContent(log.content);
-    // フォームにIDがついている場合、そこまでスクロール
     document.getElementById("log-form")?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -57,20 +52,17 @@ function App() {
     e.preventDefault();
     try {
       if (editingId !== null) {
-        // 更新モード
         await updateLog(editingId, { title, content, category });
         setEditingId(null);
       } else {
-        // 新規作成モード
         await createLog({ title, content, category });
       }
-
       setTitle("");
       setContent("");
       setCategory("");
       loadLogs();
     } catch (err) {
-      alert("保存に失敗しました。再度ログインしてください。");
+      alert("保存に失敗しました。");
     }
   };
 
@@ -83,19 +75,32 @@ function App() {
       alert("削除に失敗しました");
     }
   };
+
+  // アニメーション用Observerの修正
   useEffect(() => {
     if (isLoggedIn) loadLogs();
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) entry.target.classList.add("show");
+          if (entry.isIntersecting) {
+            entry.target.classList.add("show");
+          }
         });
       },
       { threshold: 0.1 }
     );
-    document.querySelectorAll(".pop-in").forEach((el) => observer.observe(el));
-  }, [isLoggedIn]);
+
+    // 少し遅らせて実行することでホワイトアウトを防ぐ
+    const timer = setTimeout(() => {
+      document.querySelectorAll(".pop-in").forEach((el) => observer.observe(el));
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, [isLoggedIn, logs.length]); // logsが増えた時も再スキャン
 
   const handleAuthSuccess = () => setIsLoggedIn(true);
 
@@ -105,11 +110,8 @@ function App() {
     setLogs([]);
   };
 
-  // フォームまでスクロールする関数（トップページのボタン用）
   const scrollToAuth = () => {
-    document
-      .getElementById("auth-section")
-      ?.scrollIntoView({ behavior: "smooth" });
+    document.getElementById("auth-section")?.scrollIntoView({ behavior: "smooth" });
   };
 
   const sortedLogs = [...logs].sort((a, b) => {
@@ -129,10 +131,8 @@ function App() {
         .bg-dot { background-image: radial-gradient(#FF9F43 1px, transparent 1px); background-size: 30px 30px; }
       `}</style>
 
-      {/* --- コンテンツエリア --- */}
       {!isLoggedIn ? (
         <>
-          {/* ログイン前：トップページ + ログインフォーム */}
           <LandingSection onScrollToAuth={scrollToAuth} />
           <section id="auth-section" className="py-24 bg-[#00152b]">
             <AuthForm onAuthSuccess={handleAuthSuccess} />
@@ -140,9 +140,6 @@ function App() {
         </>
       ) : (
         <div className="pt-20">
-          {" "}
-          {/* Navbar分の余白 */}
-          {/* ログイン後：学習ログ管理画面のみ */}
           <LearningLogs
             logs={sortedLogs}
             title={title}
