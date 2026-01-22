@@ -4,6 +4,7 @@ from typing import List
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -130,11 +131,23 @@ def create_log(
 # 4. ログの取得 (Read) ★認証追加
 @app.get("/logs", response_model=List[schemas.LearningLog])
 def read_logs(
+    search: str = None,  # 検索クエリを受け取る
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
-    # ★自分のログだけを表示するようにフィルタリング
-    return db.query(models.LearningLog).filter(models.LearningLog.owner_id == current_user.id).all()
+    query = db.query(models.LearningLog).filter(models.LearningLog.owner_id == current_user.id)
+    
+    # 検索機能：タイトルかカテゴリーにキーワードが含まれるかチェック
+    if search:
+        query = query.filter(
+            or_(
+                models.LearningLog.title.contains(search),
+                models.LearningLog.category.contains(search)
+            )
+        )
+    
+    # ソート機能：作成日時の降順（新しい順）
+    return query.order_by(models.LearningLog.created_at.desc()).all()
 
 # 5. ログの削除 (Delete) ★認証追加
 @app.delete("/logs/{log_id}")

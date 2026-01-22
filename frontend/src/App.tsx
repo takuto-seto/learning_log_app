@@ -16,15 +16,22 @@ function App() {
     !!localStorage.getItem("token")
   );
 
-  const loadLogs = () => {
+  const loadLogs = (searchQuery: string = "") => {
     if (localStorage.getItem("token")) {
-      fetchLogs()
+      // APIクライアント側も search 引数を受け取れるように修正が必要
+      fetchLogs(searchQuery)
         .then(setLogs)
         .catch((err) => {
           if (err.message.includes("401")) handleLogout();
         });
     }
   };
+
+  // 検索実行時のハンドラー
+  const handleSearch = (query: string) => {
+    loadLogs(query);
+  };
+
   const handleEditClick = (log: LearningLog) => {
     setEditingId(log.id);
     setTitle(log.title);
@@ -140,6 +147,7 @@ function App() {
             onEdit={handleEditClick}
             onCancel={handleCancelEdit}
             isEditing={editingId !== null}
+            onSearch={handleSearch}
           />
         </div>
       )}
