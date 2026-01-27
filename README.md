@@ -1,9 +1,9 @@
 <h1>Learning Log App</h1>
 日々の学習を、美しく、シンプルに記録する。 個人の学習進捗を管理するためのフルスタック・Webアプリケーションです。
-
+<br>
 <h2>Demo<h2>
 https://learning-log-app-frontend.onrender.com/
-
+<br>
 <h2>主な機能<h2>
 認証システム: JWTを利用したセキュアなログイン/サインアップ機能
 
@@ -16,7 +16,7 @@ CRUD操作: 学習ログの作成、読み取り、更新、削除
 レスポンシブデザイン: PC、タブレット、スマホの全デバイスに最適化されたUI
 
 インタラクティブUI: Intersection Observerを活用したスクロールアニメーション
-
+<br>
 
 <h2>技術スタック<h2>
 <h3>Frontend<h3>
@@ -25,7 +25,7 @@ React 18 / TypeScript
 Tailwind CSS (スタイリング)
 
 Vite (ビルドツール)
-
+<br>
 <h3>Backend<h3>
 Python 3.9+ / FastAPI
 
@@ -34,7 +34,7 @@ SQLAlchemy (ORM)
 PostgreSQL
 
 JWT Authentication
-
+<br>
 <h3>Infrastructure / DevOps</h3>
 Docker / Docker Compose
 
